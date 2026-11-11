@@ -72,6 +72,29 @@ class PricingCalculatorTest {
         assertEquals(new BigDecimal("10.00"), total);
     }
 
+    @Test
+    void roundsOnlyAfterCombiningDiscountedLines() {
+        BigDecimal total = calculator.calculateOrderTotal(
+                List.of(line("0.05", 11), line("0.05", 11)), "regular", null);
+
+        assertEquals(new BigDecimal("1.05"), total);
+    }
+
+    @Test
+    void combinesLineCustomerCouponAndLargeOrderDiscounts() {
+        BigDecimal total = calculator.calculateOrderTotal(
+                List.of(line("100.03", 11), line("100.01", 10)), "vip", "SAVE20PERCENT");
+
+        assertEquals(new BigDecimal("1443.24"), total);
+    }
+
+    @Test
+    void matchesCustomerTypeAndCouponCaseSensitively() {
+        BigDecimal total = calculator.calculateOrderTotal(List.of(line("100.00", 1)), "VIP", "save10");
+
+        assertEquals(new BigDecimal("100.00"), total);
+    }
+
     private static PricingCalculator.LineItem line(String price, int quantity) {
         return new PricingCalculator.LineItem(new BigDecimal(price), quantity);
     }
