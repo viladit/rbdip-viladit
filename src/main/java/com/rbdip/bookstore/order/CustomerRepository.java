@@ -9,12 +9,18 @@ interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @Modifying
     @Query(value = """
-            INSERT INTO customers (full_name, address, phone)
-            VALUES (:fullName, :address, :phone)
+            INSERT INTO customers (first_name, last_name, address, phone)
+            SELECT first_name, last_name, :address, :phone FROM split_customer_name(:fullName)
             ON CONFLICT DO NOTHING
             """, nativeQuery = true)
     void insertIfMissing(@Param("fullName") String fullName, @Param("address") String address,
             @Param("phone") String phone);
 
-    Customer findByFullNameAndAddressAndPhone(String fullName, String address, String phone);
+    @Query(value = """
+            SELECT c.* FROM customers c
+            JOIN split_customer_name(:fullName) n USING (first_name, last_name)
+            WHERE c.address IS NOT DISTINCT FROM :address AND c.phone IS NOT DISTINCT FROM :phone
+            """, nativeQuery = true)
+    Customer findByContact(@Param("fullName") String fullName, @Param("address") String address,
+            @Param("phone") String phone);
 }

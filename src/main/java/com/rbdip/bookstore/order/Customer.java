@@ -12,8 +12,11 @@ class Customer {
     @Id
     private Long id;
 
-    @Column(name = "full_name", nullable = false)
-    private String fullName;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
 
     private String address;
     private String phone;
@@ -22,7 +25,7 @@ class Customer {
     }
 
     String getFullName() {
-        return fullName;
+        return lastName.isEmpty() ? firstName : firstName + " " + lastName;
     }
 
     String getAddress() {

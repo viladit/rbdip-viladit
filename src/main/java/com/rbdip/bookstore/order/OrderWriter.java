@@ -22,7 +22,7 @@ class OrderWriter {
         String address = request.customerAddress();
         String phone = request.customerPhone();
         customerRepository.insertIfMissing(fullName, address, phone);
-        Customer customer = customerRepository.findByFullNameAndAddressAndPhone(fullName, address, phone);
+        Customer customer = customerRepository.findByContact(fullName, address, phone);
         Order order = orderRepository.save(new Order(customer, "new"));
         for (OrderLine line : lines) {
             orderItemRepository.save(new OrderItem(order, line.product(), line.quantity()));
