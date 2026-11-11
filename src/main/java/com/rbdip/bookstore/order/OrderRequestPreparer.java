@@ -32,7 +32,7 @@ class OrderRequestPreparer {
             if (quantity <= 0) {
                 throw new IllegalArgumentException("quantity must be positive");
             }
-            lines.add(new OrderLine(product.getName(), product.getPrice(), quantity));
+            lines.add(new OrderLine(product, quantity));
         }
         return lines;
     }

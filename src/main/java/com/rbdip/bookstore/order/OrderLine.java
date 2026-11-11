@@ -1,6 +1,6 @@
 package com.rbdip.bookstore.order;
 
-import java.math.BigDecimal;
+import com.rbdip.bookstore.product.Product;
 
-record OrderLine(String productName, BigDecimal unitPrice, int quantity) {
+record OrderLine(Product product, int quantity) {
 }

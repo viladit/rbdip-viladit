@@ -6,19 +6,26 @@ import org.springframework.stereotype.Component;
 @Component
 class OrderWriter {
 
+    private final CustomerRepository customerRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
 
-    OrderWriter(OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
+    OrderWriter(CustomerRepository customerRepository, OrderRepository orderRepository,
+            OrderItemRepository orderItemRepository) {
+        this.customerRepository = customerRepository;
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
     }
 
     Order save(CreateOrderRequest request, List<OrderLine> lines) {
-        Order order = orderRepository.save(new Order(
-                request.customerFullName(), request.customerAddress(), request.customerPhone(), "new"));
+        String fullName = request.customerFullName();
+        String address = request.customerAddress();
+        String phone = request.customerPhone();
+        customerRepository.insertIfMissing(fullName, address, phone);
+        Customer customer = customerRepository.findByFullNameAndAddressAndPhone(fullName, address, phone);
+        Order order = orderRepository.save(new Order(customer, "new"));
         for (OrderLine line : lines) {
-            orderItemRepository.save(new OrderItem(order.getId(), line.productName(), line.unitPrice(), line.quantity()));
+            orderItemRepository.save(new OrderItem(order, line.product(), line.quantity()));
         }
         return order;
     }

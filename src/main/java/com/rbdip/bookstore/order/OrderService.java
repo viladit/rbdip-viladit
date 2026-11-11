@@ -30,7 +30,7 @@ public class OrderService {
     public Order createOrder(CreateOrderRequest request) {
         List<OrderLine> lines = requestPreparer.prepare(request);
         List<PricingCalculator.LineItem> pricingItems = lines.stream()
-                .map(line -> new PricingCalculator.LineItem(line.unitPrice(), line.quantity()))
+                .map(line -> new PricingCalculator.LineItem(line.product().getPrice(), line.quantity()))
                 .toList();
         String customerType = request.customerType() == null ? DEFAULT_CUSTOMER_TYPE : request.customerType();
         BigDecimal total = pricingCalculator.calculateOrderTotal(pricingItems, customerType, request.couponCode());
